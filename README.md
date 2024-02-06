@@ -54,6 +54,7 @@ Navigate to the LangFlip project directory and run the following command to crea
 ```sh
 conda env create -f env.yml
 conda activate langflip
+pip install -e .
 ```
 
 ## Technical Deep Dive

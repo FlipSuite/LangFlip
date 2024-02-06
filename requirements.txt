@@ -1,1 +1,2 @@
-# TODO: Add project dependencies here
+spleeter
+numpy==1.20.0
