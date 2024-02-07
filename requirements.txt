@@ -4,3 +4,4 @@ spleeter
 numpy
 librosa
 numpy
+openai-whisper
