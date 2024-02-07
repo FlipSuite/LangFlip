@@ -9,6 +9,11 @@ __pycache__/
 # All videos
 *.mp4
 
+# All audio file
+*.wav
+
+pretrained_models/*
+
 # Distribution / packaging
 .Python
 build/
