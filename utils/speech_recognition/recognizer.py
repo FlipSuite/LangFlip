@@ -16,7 +16,9 @@ def transcribe_audio(audio_path):
     print(f"Detected language: {max(probs, key=probs.get)}")
 
     # decode the audio
-    options = whisper.DecodingOptions()
+    options = whisper.DecodingOptions(fp16 = False)
     result = whisper.decode(model, mel, options)
+
+    print(result.text)
 
     return result.text

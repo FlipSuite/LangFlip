@@ -2,6 +2,7 @@ import argparse
 from utils.audio_extraction.extractor import extract_audio, separate_vocals_and_accompaniment
 from utils.speech_recognition.recognizer import transcribe_audio
 from pathlib import Path
+from utils.translation.translator import translate
 
 def main():
     parser = argparse.ArgumentParser(description='LangFlip Video Translation Command-Line Tool')
@@ -17,7 +18,9 @@ def main():
         separate_vocals_and_accompaniment(audio_path)
 
         current_script_path = Path(__file__).parent.absolute()
-        transcribe_audio(current_script_path.joinpath('./../data_management/vocals.wav'))
+        transcription = transcribe_audio(current_script_path.joinpath('./../data_management/vocals.wav'))
+
+        translate(from_code=args.from_lang,to_code=args.to_lang,text=transcription)
         # print(f"Translating video from {args.from_lang} to {args.to_lang} is not yet implemented.")
     except Exception as e:
         print(f"Error during audio extraction: {e}")
