@@ -3,3 +3,4 @@ numpy
 librosa
 openai-whisper
 argostranslate
+TTS

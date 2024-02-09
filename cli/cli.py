@@ -1,7 +1,7 @@
 import argparse
-from utils.audio_extraction.extractor import extract_audio, separate_vocals_and_accompaniment
-from utils.speech_recognition.recognizer import transcribe_audio
-from utils.translation.translator import translate
+from src.audio_extraction.extractor import extract_audio, separate_vocals_and_accompaniment
+from src.speech_recognition.recognizer import transcribe_audio
+from src.translation.translator import translate
 import os
 
 def main():
