@@ -1,5 +1,0 @@
-spleeter
-numpy
-librosa
-openai-whisper
-argostranslate
