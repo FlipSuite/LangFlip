@@ -1,5 +1,4 @@
 import subprocess
-from spleeter.separator import Separator
 import os
 
 current_script_path = os.path.dirname(os.path.abspath(__file__))
@@ -13,5 +12,5 @@ def extract_audio(video_path):
 
 def separate_vocals_and_accompaniment(audio_path):
     """Separates vocals and accompaniment using Spleeter."""
-    separator = Separator('spleeter:2stems')
-    separator.separate_to_file(audio_path, os.path.join(current_script_path, '..', '..', '..', 'data_management'), codec='wav', filename_format="{instrument}.{codec}")
+    # separator = Separator('spleeter:2stems')
+    # separator.separate_to_file(audio_path, os.path.join(current_script_path, '..', '..', '..', 'data_management'), codec='wav', filename_format="{instrument}.{codec}")
