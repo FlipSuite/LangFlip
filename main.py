@@ -1,23 +1,29 @@
 from modules.transcriptions.src.extractor import extract_audio, separate_vocals_and_accompaniment
-from modules.transcriptions.src.recognizer import transcribe_audio
+from modules.transcriptions.src.recognizer import transcribe_audio, group_until_silence
 from modules.transcriptions.src.translator import translate
 import os
 import shutil
-import whisper_timestamped
 
 def start_translation():
   current_script_path = os.path.dirname(os.path.abspath(__file__))
   empty_data_management_folder(current_script_path)
+
   video_path = os.path.join(current_script_path, 'video.mp4')
   audio_path = extract_audio(video_path)
   print(f"Audio extracted to {audio_path}")
+
   separate_vocals_and_accompaniment(audio_path)
   print("Audio splitted")
+
   vocals_path = audio_path.replace("video.wav", "video_vocals.wav")
-  results = whisper_timestamped.transcribe("tiny", vocals_path)
-  print(results)
-  # transcription = transcribe_audio(os.path.join(current_script_path, '..', 'data_management', 'video_acco.wav'))
-  # translate(from_code=args.from_lang,to_code=args.to_lang,text=transcription)
+  transcription = transcribe_audio(vocals_path)
+  print("Transcription created")
+
+  grouped_sentences = group_until_silence(transcription["segments"])
+  print(grouped_sentences)
+  # Start iteration
+  # translate(from_code="en",to_code="fr",text=transcription)
+  # print(transcription)
   # Further processing for translation would go here
 
 def empty_data_management_folder(current_script_path):

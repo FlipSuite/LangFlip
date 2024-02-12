@@ -1,24 +1,47 @@
-import whisper
+import whisper_timestamped
 
 def transcribe_audio(audio_path):
-    """Transcribes the audio file using OpenAI Whisper."""
-    model = whisper.load_model("base")
+    vocals_path = audio_path.replace("video.wav", "video_vocals.wav")
+    results = whisper_timestamped.transcribe("tiny", vocals_path)
+    
+    return results
 
-    # load audio and pad/trim it to fit 30 seconds
-    audio = whisper.load_audio(audio_path)
-    audio = whisper.pad_or_trim(audio)
+def group_until_silence(segments):
+    # Initialize an empty list to hold the grouped segments
+    grouped_segments = []
 
-    # make log-Mel spectrogram and move to the same device as the model
-    mel = whisper.log_mel_spectrogram(audio).to(model.device)
+    # Temporary variable to hold the current group of segments
+    current_group = None
 
-    # detect the spoken language
-    _, probs = model.detect_language(mel)
-    print(f"Detected language: {max(probs, key=probs.get)}")
+    for segment in segments:
+        # If there is no current group, start a new one with the current segment
+        if current_group is None:
+            current_group = {
+                "start": segment["start"],
+                "end": segment["end"],
+                "text": segment["text"]
+            }
+        else:
+            # Calculate the interval between the current group's end and the current segment's start
+            interval = segment['start'] - current_group['end']
 
-    # decode the audio
-    options = whisper.DecodingOptions(fp16 = False)
-    result = whisper.decode(model, mel, options)
+            # If the interval is less than or equal to 1.5 seconds, concatenate the current segment's text
+            # and update the end to the current segment's end
+            if interval <= 0.6:
+                current_group['text'] += " " + segment['text']
+                current_group['end'] = segment['end']
+            else:
+                # If the interval is more than 1.5 seconds, add the current group to the list of grouped segments
+                grouped_segments.append(current_group)
+                # Start a new group with the current segment
+                current_group = {
+                    "start": segment["start"],
+                    "end": segment["end"],
+                    "text": segment["text"]
+                }
 
-    print(result.text)
+    # Add the last group to the list if it exists
+    if current_group:
+        grouped_segments.append(current_group)
 
-    return result.text
+    return grouped_segments
