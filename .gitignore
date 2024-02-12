@@ -12,6 +12,7 @@ __pycache__/
 # All audio file
 *.wav
 *.flac
+*.mp3
 
 pretrained_models/*
 

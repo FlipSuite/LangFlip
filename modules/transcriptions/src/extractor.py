@@ -1,5 +1,6 @@
 import subprocess
 import os
+from audio_separator.separator import Separator
 
 current_script_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -12,5 +13,15 @@ def extract_audio(video_path):
 
 def separate_vocals_and_accompaniment(audio_path):
     """Separates vocals and accompaniment using Spleeter."""
-    # separator = Separator('spleeter:2stems')
-    # separator.separate_to_file(audio_path, os.path.join(current_script_path, '..', '..', '..', 'data_management'), codec='wav', filename_format="{instrument}.{codec}")
+    # Initialize the Separator class (with optional configuration properties below)
+    separator = Separator(primary_stem_output_path=audio_path.replace("video.wav", "video_accompaniment.wav"), secondary_stem_output_path=audio_path.replace("video.wav", "video_vocals.wav"))
+
+    # Load a machine learning model (if unspecified, defaults to 'UVR-MDX-NET-Inst_HQ_3.onnx')
+    separator.load_model()
+
+    # Perform the separation on specific audio files without reloading the model
+    primary_stem_output_path, secondary_stem_output_path = separator.separate(audio_path)
+
+    print(f'Primary stem saved at {primary_stem_output_path}')
+    print(f'Secondary stem saved at {secondary_stem_output_path}')
+    return primary_stem_output_path
