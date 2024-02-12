@@ -1,11 +1,5 @@
 import argparse
-import subprocess
-from modules.transcriptions.src.extractor import extract_audio, separate_vocals_and_accompaniment
-from modules.transcriptions.src.recognizer import transcribe_audio
-from modules.transcriptions.src.translator import translate
-import os
-import shutil
-# from tortoise.api import TextToSpeech
+from main import start_translation
 
 def main():
     parser = argparse.ArgumentParser(prog='langflip', description='LangFlip Video Translation Command-Line Tool')
@@ -24,22 +18,12 @@ def main():
 
     if args.command == 'translate':
         try:
-            current_script_path = os.path.dirname(os.path.abspath(__file__))
-            empty_data_management_folder(current_script_path)
-            video_path = os.path.join(current_script_path, '..', 'video.mp4')
-            audio_path = extract_audio(video_path)
-            print(f"Audio extracted to {audio_path}")
-            separate_vocals_and_accompaniment(audio_path)
-            print("Audio splitted")
-            # transcription = transcribe_audio(os.path.join(current_script_path, '..', 'data_management', 'video_acco.wav'))
-            # translate(from_code=args.from_lang,to_code=args.to_lang,text=transcription)
-            # Further processing for translation would go here
-
+            start_translation()
         except Exception as e:
             print(f"Error during audio extraction: {e}")
 
-    elif args.command == 'ui':
-        print(subprocess.run(["flet", "run", "--web", "ui/flet_interface.py"]))
+    elif args.command == 'other':
+        print("Coming soon")
 
 if __name__ == "__main__":
     main()
@@ -57,15 +41,3 @@ if __name__ == "__main__":
 
 # # Saving the generated audio to a file
 # audio.save("output_audio.wav")
-    
-def empty_data_management_folder(current_script_path):
-    folder_path = os.path.join(current_script_path, '..', 'data_management')
-    for filename in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
