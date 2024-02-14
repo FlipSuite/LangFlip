@@ -1,4 +1,3 @@
-"""TODO: Manages the translation of transcribed text to the target language."""
 import argostranslate.package
 import argostranslate.translate
 
@@ -14,6 +13,5 @@ def translate(from_code, to_code, text):
     )
     argostranslate.package.install_from_path(package_to_install.download())
 
-    # Translate
     translatedText = argostranslate.translate.translate(text, from_code, to_code)
-    print(translatedText)
+    return translatedText
