@@ -1,18 +1,27 @@
-from modules.transcriptions.src.extractor import extract_audio, separate_vocals_and_accompaniment
-from modules.transcriptions.src.recognizer import transcribe_audio, group_until_silence
-from modules.transcriptions.src.translator import translate
-
-from modules.speeches.src.reference_voice_clips import generate_reference_voice_clips
-from modules.speeches.src.text_to_speech import generate_speech
-
 import os
+import sys
+
+from transcriptions.extractor import extract_audio, separate_vocals_and_accompaniment
+from transcriptions.recognizer import transcribe_audio, group_until_silence
+from transcriptions.translator import translate
+
+from speeches.reference_voice_clips import generate_reference_voice_clips
+print("Importing cloned repos")
+open_voice_path = os.path.join('speeches', 'OpenVoice')
+full_path = os.path.abspath(open_voice_path)
+
+if full_path not in sys.path:
+    sys.path.insert(0, full_path)
+print("Imported cloned repos")
+
+from speeches.text_to_speech import generate_speech
 
 def start_translation():
   current_script_path = os.path.dirname(os.path.abspath(__file__))
   empty_data_management_folder(current_script_path)
 
   video_path = os.path.join(current_script_path, 'video.mp4')
-  audio_path = extract_audio(video_path)
+  audio_path = extract_audio(video_path, current_script_path)
   print(f"Audio extracted to {audio_path}")
 
   separate_vocals_and_accompaniment(audio_path)
@@ -31,7 +40,7 @@ def start_translation():
     translated_sentence = translate(from_code="en",to_code="fr",text=sentence["text"])
     print(f"Translated sentence: {translated_sentence}")
     print("Start generating speech")
-    generate_speech(translated_sentence, reference_voice_clips, current_script_path, index)
+    generate_speech(translated_sentence, current_script_path, index)
     print(f"Translated sentence: {translated_sentence}")
 
 
