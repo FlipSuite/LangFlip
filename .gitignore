@@ -15,6 +15,7 @@ __pycache__/
 *.mp3
 
 pretrained_models/*
+processed/*
 
 # Distribution / packaging
 .Python
