@@ -1,3 +1,6 @@
 openai-whisper
 argostranslate
-audio-separator[cpu]
+audio-separator[gpu]
+# SoundFile
+# Set-Item Env:\DS_BUILD_OPS 0
+# deepspeed

@@ -1,8 +1,11 @@
 from modules.transcriptions.src.extractor import extract_audio, separate_vocals_and_accompaniment
 from modules.transcriptions.src.recognizer import transcribe_audio, group_until_silence
 from modules.transcriptions.src.translator import translate
+
+from modules.speeches.src.reference_voice_clips import generate_reference_voice_clips
+from modules.speeches.src.text_to_speech import generate_speech
+
 import os
-import shutil
 
 def start_translation():
   current_script_path = os.path.dirname(os.path.abspath(__file__))
@@ -20,11 +23,17 @@ def start_translation():
   print("Transcription created")
 
   grouped_sentences = group_until_silence(transcription["segments"])
-  print(grouped_sentences)
-  # Start iteration
-  # translate(from_code="en",to_code="fr",text=transcription)
-  # print(transcription)
-  # Further processing for translation would go here
+  print("Transcription grouped")
+
+  reference_voice_clips = generate_reference_voice_clips(vocals_path)
+
+  for index, sentence in enumerate(grouped_sentences, start=1):
+    translated_sentence = translate(from_code="en",to_code="fr",text=sentence["text"])
+    print(f"Translated sentence: {translated_sentence}")
+    print("Start generating speech")
+    generate_speech(translated_sentence, reference_voice_clips, current_script_path, index)
+    print(f"Translated sentence: {translated_sentence}")
+
 
 def empty_data_management_folder(current_script_path):
     folder_path = os.path.join(current_script_path, 'data_management')
@@ -32,9 +41,14 @@ def empty_data_management_folder(current_script_path):
         file_path = os.path.join(folder_path, filename)
         try:
             if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
+                if filename != '.gitkeep':
+                    os.unlink(file_path)
             elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
+                for subfilename in os.listdir(file_path):
+                    subfile_path = os.path.join(file_path, subfilename)
+                    if os.path.isfile(subfile_path) or os.path.islink(subfile_path):
+                        if subfilename != '.gitkeep':
+                            os.unlink(subfile_path)
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
