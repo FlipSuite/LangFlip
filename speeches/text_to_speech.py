@@ -5,10 +5,7 @@ import torch
 import  speeches.OpenVoice.se_extractor as se_extractor
 from speeches.OpenVoice.api import BaseSpeakerTTS, ToneColorConverter
 from transformers import AutoProcessor, BarkModel
-from bark import SAMPLE_RATE, generate_audio, preload_models
 import scipy
-
-preload_models()
 
 def generate_speech(sentence, root_path, index, voice_audio_file):
   openvoice_path = os.path.join(root_path, 'speeches', 'OpenVoice')
@@ -18,9 +15,16 @@ def generate_speech(sentence, root_path, index, voice_audio_file):
 
   resources_path = os.path.join(openvoice_path, 'resources')
 
+  processor = AutoProcessor.from_pretrained("suno/bark")
   model = BarkModel.from_pretrained("suno/bark")
 
-  audio_array = generate_audio("Bonjour je m'appele rémy et je test bark pour voir si ça marche")
+  voice_preset = "v2/fr_speaker_0"
+
+  inputs = processor("Bonjour je m'appele rémy et je test bark pour voir si ça marche", voice_preset=voice_preset)
+
+  audio_array = model.generate(**inputs)
+  audio_array = audio_array.cpu().numpy().squeeze()
+  
   sample_rate = model.generation_config.sample_rate
   scipy.io.wavfile.write("bark_out.wav", rate=sample_rate, data=audio_array)
 

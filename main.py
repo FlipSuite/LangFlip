@@ -18,13 +18,13 @@ from speeches.text_to_speech import generate_speech
 
 def start_translation():
   current_script_path = os.path.dirname(os.path.abspath(__file__))
-  empty_data_management_folder(current_script_path)
+#   empty_data_management_folder(current_script_path)
 
   video_path = os.path.join(current_script_path, 'video.mp4')
   audio_path = extract_audio(video_path, current_script_path)
   print(f"Audio extracted to {audio_path}")
 
-  separate_vocals_and_accompaniment(audio_path)
+#   separate_vocals_and_accompaniment(audio_path)
   print("Audio splitted")
 
   vocals_path = audio_path.replace("video.wav", "video_vocals.wav")
