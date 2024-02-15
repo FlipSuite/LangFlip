@@ -40,7 +40,7 @@ def start_translation():
     translated_sentence = translate(from_code="en",to_code="fr",text=sentence["text"])
     print(f"Translated sentence: {translated_sentence}")
     print("Start generating speech")
-    generate_speech(translated_sentence, current_script_path, index)
+    generate_speech(translated_sentence, current_script_path, index, vocals_path)
     print(f"Translated sentence: {translated_sentence}")
 
 
