@@ -4,6 +4,11 @@ import torchaudio
 import torch
 import  speeches.OpenVoice.se_extractor as se_extractor
 from speeches.OpenVoice.api import BaseSpeakerTTS, ToneColorConverter
+from transformers import AutoProcessor, BarkModel
+from bark import SAMPLE_RATE, generate_audio, preload_models
+import scipy
+
+preload_models()
 
 def generate_speech(sentence, root_path, index, voice_audio_file):
   openvoice_path = os.path.join(root_path, 'speeches', 'OpenVoice')
@@ -13,33 +18,39 @@ def generate_speech(sentence, root_path, index, voice_audio_file):
 
   resources_path = os.path.join(openvoice_path, 'resources')
 
-  device="cuda:0" if torch.cuda.is_available() else "cpu"
-  reference_voice_clips_location = os.path.join(root_path, 'data_management')
+  model = BarkModel.from_pretrained("suno/bark")
 
-  base_speaker_tts = BaseSpeakerTTS(f'{en_speaker_path}/config.json', device=device)
-  base_speaker_tts.load_ckpt(f'{en_speaker_path}/checkpoint.pth')
+  audio_array = generate_audio("Bonjour je m'appele rémy et je test bark pour voir si ça marche")
+  sample_rate = model.generation_config.sample_rate
+  scipy.io.wavfile.write("bark_out.wav", rate=sample_rate, data=audio_array)
 
-  tone_color_converter = ToneColorConverter(f'{converter_path}/config.json', device=device)
-  tone_color_converter.load_ckpt(f'{converter_path}/checkpoint.pth')
+  # device="cuda:0" if torch.cuda.is_available() else "cpu"
+  # reference_voice_clips_location = os.path.join(root_path, 'data_management')
 
-  source_se = torch.load(f'{en_speaker_path}/en_default_se.pth').to(device)
+  # base_speaker_tts = BaseSpeakerTTS(f'{en_speaker_path}/config.json', device=device)
+  # base_speaker_tts.load_ckpt(f'{en_speaker_path}/checkpoint.pth')
 
-  target_se, audio_name = se_extractor.get_se(voice_audio_file, tone_color_converter, target_dir='processed', vad=True)
+  # tone_color_converter = ToneColorConverter(f'{converter_path}/config.json', device=device)
+  # tone_color_converter.load_ckpt(f'{converter_path}/checkpoint.pth')
 
-  save_path = f'{reference_voice_clips_location}/output_en_default.wav'
+  # source_se = torch.load(f'{en_speaker_path}/en_default_se.pth').to(device)
+
+  # target_se, audio_name = se_extractor.get_se(voice_audio_file, tone_color_converter, target_dir='processed', vad=True)
+
+  # save_path = f'{reference_voice_clips_location}/output_en_default.wav'
 
   # Run the base speaker tts
-  src_path = f'{reference_voice_clips_location}/tmp.wav'
-  base_speaker_tts.tts(sentence, src_path, speaker='default', language='French', speed=1.0)
+  # src_path = f'{reference_voice_clips_location}/tmp.wav'
+  # base_speaker_tts.tts(sentence, src_path, speaker='default', language='French', speed=1.0)
 
   # Run the tone color converter
-  encode_message = "@MyShell"
-  tone_color_converter.convert(
-      audio_src_path=src_path,
-      src_se=source_se,
-      tgt_se=target_se,
-      output_path=save_path,
-      message=encode_message)
+  # encode_message = "@MyShell"
+  # tone_color_converter.convert(
+  #     audio_src_path=src_path,
+  #     src_se=source_se,
+  #     tgt_se=target_se,
+  #     output_path=save_path,
+  #     message=encode_message)
   # save_audio_as_wav(pcm_audio=pcm_audio, output_path=output_file_path)
 
   return "done"
