@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'langflip=cli.cli:main',
+            'langflip=cli:main',
         ],
     },
     install_requires=[
